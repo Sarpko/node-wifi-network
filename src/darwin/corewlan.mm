@@ -2,6 +2,7 @@
 #import <CoreWLAN/CoreWLANConstants.h>
 #import <CoreWLAN/CoreWLANTypes.h>
 #import <CoreWLAN/CoreWLAN.h>
+#import <CoreLocation/CoreLocation.h>
 
 #import "../wifi.hpp"
 
@@ -28,8 +29,8 @@ long get_channel_width( CWChannel *channel ) {
     case kCWChannelWidthUnknown: return 0;
     case kCWChannelWidth20MHz: return 20;
     case kCWChannelWidth40MHz: return 40;
-    case kCWChannelWidth80MHz: return 60;
-    case kCWChannelWidth160MHz: return 120;
+    case kCWChannelWidth80MHz: return 80;
+    case kCWChannelWidth160MHz: return 160;
     default: return -1;
   }
 
@@ -37,6 +38,36 @@ long get_channel_width( CWChannel *channel ) {
 
 std::vector<WifiNetwork> wifi_scan_networks() {
 
+ CLLocationManager *mgr = [[CLLocationManager alloc] init];
+ if (@available(macOS 10.15, *)) {
+      [mgr requestAlwaysAuthorization];
+      [mgr startUpdatingLocation];
+      CWInterface* wifiInterface = [[CWWiFiClient sharedWiFiClient] interface];
+      NSArray *wifiList = [[wifiInterface scanForNetworksWithName:nil error:nil] allObjects];
+      std::vector<WifiNetwork> wifi_networks;
+      CWChannel *channel;
+
+      for (CWNetwork *currentWifi in wifiList) {
+          //NSString *wifiInfo = [NSString stringWithFormat:@"SSID:",
+          //                      currentWifi];
+          WifiNetwork wifi_network = WifiNetwork();
+          channel = [currentWifi wlanChannel];
+
+          wifi_network.ssid = [[currentWifi ssid] UTF8String] != nil ?
+            [[currentWifi ssid] UTF8String] : "";
+
+          wifi_network.bssid = [[currentWifi bssid] UTF8String] != nil ?
+            [[currentWifi bssid] UTF8String] : "";
+
+          wifi_network.rssi = [currentWifi rssiValue];
+          wifi_network.channel_number = channel != nil ? [channel channelNumber] : -1;
+          wifi_network.channel_width = [channel channelWidth];
+
+          wifi_networks.push_back( wifi_network );
+          //NSLog(@"Wi-Fi Info from sarp: %@", currentWifi);
+      }
+      return wifi_networks;
+  } else {    
   CWChannel *channel;
   NSError *error;
 
@@ -72,7 +103,6 @@ std::vector<WifiNetwork> wifi_scan_networks() {
 
     }
   }
-
   return wifi_networks;
-
+  }
 }
