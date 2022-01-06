@@ -18,8 +18,8 @@ v8::Local<v8::Object> pack_wifi_network( const WifiNetwork *instance ) {
     New<String>( instance->bssid ).ToLocalChecked()
   );
   Nan::Set( object,
-    New<String>("countryCode").ToLocalChecked(),
-    New<String>( instance->country_code ).ToLocalChecked()
+    New<String>("connectedMAC").ToLocalChecked(),
+    New<String>( instance->connectedMAC ).ToLocalChecked()
   );
   Nan::Set( object,
     New<String>("beaconInterval").ToLocalChecked(),
