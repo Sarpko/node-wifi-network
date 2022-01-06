@@ -1,51 +1,26 @@
+#ifndef SRC_WIFI_HPP_
+#define SRC_WIFI_HPP_
+
 #include <nan.h>
-#include "wifi.hpp"
+#include <string>
+#include <vector>
 
-using v8::String;
-using v8::Number;
-using Nan::New;
+struct WifiNetwork {
+  std::string ssid;
+  std::string bssid;
+  std::string connectedMAC;
+  int64_t beacon_interval;
+  int64_t noise;
+  int64_t rssi;
+  int64_t channel_number;
+  int64_t channel_band;
+  int64_t channel_width;
+};
 
-v8::Local<v8::Object> pack_wifi_network( const WifiNetwork *instance ) {
+std::vector<WifiNetwork> wifi_scan_networks();
+v8::Local<v8::Object> pack_wifi_network( const WifiNetwork *instance );
+// WifiNetwork unpack_wifi_network( const v8::Local<v8::Object> *object );
 
-  v8::Local<v8::Object> object = Nan::New<v8::Object>();
+NAN_METHOD( scan );
 
-  Nan::Set( object,
-    New<String>("ssid").ToLocalChecked(),
-    New<String>( instance->ssid ).ToLocalChecked()
-  );
-  Nan::Set( object,
-    New<String>("bssid").ToLocalChecked(),
-    New<String>( instance->bssid ).ToLocalChecked()
-  );
-  Nan::Set( object,
-    New<String>("connectedMAC").ToLocalChecked(),
-    New<String>( instance->connectedMAC ).ToLocalChecked()
-  );
-  Nan::Set( object,
-    New<String>("beaconInterval").ToLocalChecked(),
-    New<Number>( instance->beacon_interval )
-  );
-  Nan::Set( object,
-    New<String>("noise").ToLocalChecked(),
-    New<Number>( instance->noise )
-  );
-  Nan::Set( object,
-    New<String>("rssi").ToLocalChecked(),
-    New<Number>( instance->rssi )
-  );
-  Nan::Set( object,
-    New<String>("channelNumber").ToLocalChecked(),
-    New<Number>( instance->channel_number )
-  );
-  Nan::Set( object,
-    New<String>("channelBand").ToLocalChecked(),
-    New<Number>( instance->channel_band )
-  );
-  Nan::Set( object,
-    New<String>("channelWidth").ToLocalChecked(),
-    New<Number>( instance->channel_width )
-  );
-
-  return object;
-
-}
+#endif // SRC_WIFI_HPP_
