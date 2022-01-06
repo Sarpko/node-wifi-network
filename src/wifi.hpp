@@ -8,7 +8,7 @@
 struct WifiNetwork {
   std::string ssid;
   std::string bssid;
-  std::string country_code;
+  std::string connectedMAC;
   int64_t beacon_interval;
   int64_t noise;
   int64_t rssi;
