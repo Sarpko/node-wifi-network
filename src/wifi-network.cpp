@@ -48,4 +48,5 @@ v8::Local<v8::Object> pack_wifi_network( const WifiNetwork *instance ) {
 
   return object;
 
+  
 }
